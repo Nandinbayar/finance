@@ -16,6 +16,24 @@ var uiController = (function () {
     getDOMstrings: function () {
       return DOMstrings;
     },
+
+    addListItem: function (item, type) {
+      var html, list;
+      if (type === "inc") {
+        list = ".income__list";
+        html =
+          '<div class="item clearfix" id="income-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value">$$VALUE$$</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+      } else {
+        list = ".expenses__list";
+        html =
+          '<div class="item clearfix" id="expense-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value">$$VALUE$$</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+      }
+      html = html.replace("%id%", item.id);
+      html = html.replace("$$DESCRIPTION$$", item.description);
+      html = html.replace("$$VALUE$$", item.value);
+
+      document.querySelector(list).insertAdjacentHTML("beforeend", html);
+    },
   };
 })();
 var financeController = (function () {
@@ -54,6 +72,7 @@ var financeController = (function () {
         item = new Expense(id, desc, val);
       }
       data.items[type].push(item);
+      return item;
     },
     seeData: function () {
       return data;
@@ -64,8 +83,8 @@ var financeController = (function () {
 var appController = (function (uiController, fnController) {
   var ctrlAddItem = function () {
     var input = uiController.getInput();
-    financeController.addItem(input.type, input.description, input.value);
-    console.log(input);
+    var item = fnController.addItem(input.type, input.description, input.value);
+    uiController.addListItem(item, input.type);
   };
   var setupEventListeners = function () {
     var DOM = uiController.getDOMstrings();
